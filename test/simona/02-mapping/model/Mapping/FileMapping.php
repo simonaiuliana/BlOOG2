@@ -60,4 +60,5 @@ class FileMapping
     {
         return "Cette instance est créée par ".self::class;
     }
+   
 }

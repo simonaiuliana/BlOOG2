@@ -42,3 +42,4 @@ class TagMapping
         return "Cette instance est créée par ".self::class;
     }
 }
+var_dump($tag);
