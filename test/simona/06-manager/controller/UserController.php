@@ -1,119 +1,99 @@
 <?php
-
 namespace manager\controller;
 
 use model\Manager\UserManager;
+use Exception;
 
 class UserController
 {
-    protected UserManager $userManager;
+    private $userManager;
 
     public function __construct()
     {
         $this->userManager = new UserManager();
     }
 
-    public function create()
+    public function view($userId)
     {
-        // Implementează logica pentru crearea unui nou utilizator
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Procesează datele din formular
-            $userData = [
-                'user_login' => $_POST['user_login'],
-                'user_password' => $_POST['user_password'],
-                'user_full_name' => $_POST['user_full_name'],
-                'user_mail' => $_POST['user_mail'],
-                'user_status' => $_POST['user_status']
-                // Adaugă și alte câmpuri necesare pentru crearea utilizatorului
-            ];
-
-            try {
-                $this->userManager->create($userData);
-                // Redirect către pagina de listare a utilizatorilor sau altă acțiune după creare
-                header('Location: index.php'); // Exemplu de redirecționare
-                exit;
-            } catch (Exception $e) {
-                // Gestionează eroarea de creare utilizator
-                echo 'Eroare la crearea utilizatorului: ' . $e->getMessage();
-            }
-        } else {
-            // Afișează formularul de creare utilizator
-            include 'view/user/create.php';
-        }
-    }
-
-    public function view(int $userId)
-    {
-        // Implementează logica pentru afișarea detaliilor utilizatorului
         try {
             $user = $this->userManager->getById($userId);
-            // Afisează pagina cu detaliile utilizatorului
             include 'view/user/view.php';
         } catch (Exception $e) {
-            // Gestionează eroarea de afișare a utilizatorului
             echo 'Eroare la afișarea utilizatorului: ' . $e->getMessage();
         }
     }
 
-    public function update(int $userId)
+    public function create()
     {
-        // Implementează logica pentru actualizarea utilizatorului
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Procesează datele din formular
-            $userData = [
+            $data = [
+                'user_login' => $_POST['user_login'],
+                'user_password' => $_POST['user_password'],
+                'user_full_name' => $_POST['user_full_name'],
+                'user_mail' => $_POST['user_mail'],
+                'user_status' => $_POST['user_status'],
+                'user_secret_key' => $_POST['user_secret_key'],
+                'permission_permission_id' => $_POST['permission_permission_id'],
+            ];
+
+            try {
+                $this->userManager->create($data);
+                header('Location: routerController.php?route=user&action=view&user_id=' . $data['user_id']);
+                exit;
+            } catch (Exception $e) {
+                echo 'Eroare la crearea utilizatorului: ' . $e->getMessage();
+            }
+        } else {
+            include 'view/user/create.php';
+        }
+    }
+
+    public function update($userId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = [
                 'user_id' => $userId,
                 'user_login' => $_POST['user_login'],
                 'user_password' => $_POST['user_password'],
                 'user_full_name' => $_POST['user_full_name'],
                 'user_mail' => $_POST['user_mail'],
-                'user_status' => $_POST['user_status']
-                // Adaugă și alte câmpuri necesare pentru actualizarea utilizatorului
+                'user_status' => $_POST['user_status'],
+                'user_secret_key' => $_POST['user_secret_key'],
+                'permission_permission_id' => $_POST['permission_permission_id'],
             ];
 
             try {
-                $this->userManager->update($userData);
-                // Redirect către pagina de detaliu a utilizatorului sau altă acțiune după actualizare
-                header('Location: index.php?action=view&user_id=' . $userId); // Exemplu de redirecționare
+                $this->userManager->update($data);
+                header('Location: routerController.php?route=user&action=view&user_id=' . $userId);
                 exit;
             } catch (Exception $e) {
-                // Gestionează eroarea de actualizare a utilizatorului
                 echo 'Eroare la actualizarea utilizatorului: ' . $e->getMessage();
             }
         } else {
-            // Afisează formularul de actualizare a utilizatorului
             try {
                 $user = $this->userManager->getById($userId);
-                // Afisează formularul cu datele utilizatorului de actualizat
                 include 'view/user/update.php';
             } catch (Exception $e) {
-                // Gestionează eroarea de afișare a formularului de actualizare
                 echo 'Eroare la afișarea formularului de actualizare: ' . $e->getMessage();
             }
         }
     }
 
-    public function delete(int $userId)
+    public function delete($userId)
     {
-        // Implementează logica pentru ștergerea utilizatorului
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Procesează ștergerea utilizatorului
             try {
                 $this->userManager->delete($userId);
-                // Redirect către pagina de listare a utilizatorilor sau altă acțiune după ștergere
-                header('Location: index.php'); // Exemplu de redirecționare
+                header('Location: routerController.php?route=user');
                 exit;
             } catch (Exception $e) {
-                // Gestionează eroarea de ștergere a utilizatorului
                 echo 'Eroare la ștergerea utilizatorului: ' . $e->getMessage();
             }
         } else {
-            // Afisează pagina de confirmare a ștergerii utilizatorului
             try {
                 $user = $this->userManager->getById($userId);
-                // Afisează pagina cu confirmarea ștergerii utilizatorului
                 include 'view/user/delete.php';
             } catch (Exception $e) {
-                // Gestionează eroarea de afișare a paginii de confirmare a ștergerii
                 echo 'Eroare la afișarea paginii de confirmare a ștergerii: ' . $e->getMessage();
             }
         }

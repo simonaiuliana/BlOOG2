@@ -1,8 +1,10 @@
 <?php
 
 
-namespace model\Interface;
-interface InterfaceSlugManager
+namespace model\Manager;
+use model\Interface\InterfaceManager;
+
+interface InterfaceSlugManager extends InterfaceManager
 {
-    public function selectOneBySlug(string $slug);
+    public function getBySlug(string $slug);
 }
